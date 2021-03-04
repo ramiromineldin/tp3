@@ -28,8 +28,8 @@ def bfs(grafo, origen, final):
                 if w == final:
                     return padres
     return -1
-def truncate(f, n):
-    return math.floor(f * 10 ** n) / 10 ** n
+
+
 
 def page_rank(grafo, d):
     len_grafo = len(grafo)
