@@ -39,47 +39,51 @@ def diccionario_a_lista_ordenada(diccionario):
     lista = []
     for item in list(diccionario.items()):
         heapq.heappush(heap,item[::-1])
-    
+
     for i in range(len(heap)):
-        lista.append(heapq.heappop(heap))
+        lista.append(heapq.heappop(heap)[1])
     return lista[::-1]
-    
-    
-def page_rank(grafo, d, n):
-    len_grafo = len(grafo)
-    pageranks = {}
-    i = 0
-    for vertice in grafo.vertices:
-            pageranks[vertice] = 1.0/len_grafo
-    while (i < n):    
-        for vertice in grafo.vertices:
-            pagerank_sum = sum(pageranks[ady] / len(grafo.adyacentes(ady)) for ady in grafo.adyacentes(vertice))
-            pageranks[vertice] += ((1-d) / len_grafo + (d * pagerank_sum))
-        i+=1
-    
-    return diccionario_a_lista_ordenada(pageranks)
      
-
-
-
-
-def random_walk(grafo, vertice, pagerank, n, largo):
+     
+def page_rank(grafo, d, k):
+    len_grafo = len(grafo) 
+    pageranks_actuales = {}
+    pageranks_anteriores = {}
     for vertice in grafo.vertices:
-        for i in range(n):
-            for j in range(largo):
-                adyacentes = grafo.adyacentes(vertice)
-                random.choice(adyacentes)
-                
+        pageranks_actuales[vertice] = 1/len_grafo
+       
+        
+    for i in range(k):
+        pageranks_anteriores = pageranks_actuales.copy() 
+        for vertice in grafo.vertices:
+            pagerank_sum = 0
+            for ady in grafo.adyacentes(vertice):
+                pagerank_sum +=pageranks_anteriores[ady] / len(grafo.adyacentes(ady))
+            pageranks_actuales[vertice] = (1-d) / len_grafo + d * pagerank_sum
+
+    return diccionario_a_lista_ordenada(pageranks_actuales)
 
 
 
-def page_rank_personalizado(grafo, vertice, n):
-    pagerank = {}
-    for vertice in grafo.vertices:
-        pagerank[vertice] = 1
-    for v in grafo.adyacentes(vertice):
-        pagerank[v] *= 1/len(grafo.adyacentes(v))
+def random_walk(grafo, vertice, k, pageranks,i):
+    if i == k:
+        return
+    else:
+        adyacentes = grafo.adyacentes(vertice)
+        ady = random.choice(adyacentes)
+        transferencia = pageranks[vertice] / len(adyacentes)
+        pageranks[vertice] -= transferencia
+        pageranks[ady] = pageranks.get(ady, 0) + transferencia        
+        i+=1
+        random_walk(grafo, ady, k, pageranks,i)
 
+
+def page_rank_personalizado(grafo, vertice, k, n):
+    pageranks = {}
+    pageranks[vertice] = 1
+    for i in range(n):
+        random_walk(grafo, vertice, k, pageranks, 0)
+    return diccionario_a_lista_ordenada(pageranks)
 
 
 
@@ -90,12 +94,12 @@ g.agregar_vertice(3)
 g.agregar_vertice(4)
 g.agregar_vertice(5)
 g.agregar_arista(1,2,None)
+g.agregar_arista(1,3,None)
 g.agregar_arista(2,3,None)
-g.agregar_arista(3,4,None)
+g.agregar_arista(2,4,None)
 g.agregar_arista(3,5,None)
-print(len(g))
-print(page_rank(g, 0.8, 5))
-
+g.agregar_arista(4,5,None)
+print(page_rank_personalizado(g, 1, 5, 10))
 
 
 
