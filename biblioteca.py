@@ -108,7 +108,28 @@ def clustering_promedio(grafo):
 		suma +=  clustering(v)
 
 	return suma/len(grafo)
+def obtener_ciclo(grafo, inicio, n):
+	visitados = set()
+	visitados.add(inicio)
+	padres = {}
+	padres[inicio] = None
+	return wrp_obtener_ciclo(grafo, inicio, inicio, visitados, n,0, padres)
+	 
 
+def wrp_obtener_ciclo(grafo, inicio, actual, visitados, n, i, padres): 
+	if (i == n and i > 0): 
+		if (inicio == actual): return padres
+	if (i > n): return 0
+
+	for w in grafo.adyacentes(actual):
+		if w not in visitados or padres[actual] != w: 
+			padres[w] = actual
+			visitados.add(w)
+			ciclo = wrp_obtener_ciclo(grafo, inicio, w, visitados, n, i + 1, padres)
+			#visitados.remove(w)
+			if ciclo: return padres
+			
+	return 0
 
 g = Grafo(False)
 g.agregar_vertice(1)
