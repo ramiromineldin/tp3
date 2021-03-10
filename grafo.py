@@ -17,14 +17,14 @@ class Grafo:
 
     def agregar_vertice(self, clave):
         if clave in self.vertices:
-            raise Exception("El vertice ya se encuentra en el grafo")
+           return False
         
         self.vertices[clave] = {}
         return True
     
     def borrar_vertice(self, clave):
         if not clave in self.vertices: 
-            raise Exception("No existe el vertice")
+            return False
 
         self.vertices.pop(clave)
         for vertice in self.vertices:
@@ -33,10 +33,9 @@ class Grafo:
         return True
 
     def agregar_arista(self, inicio, fin, peso):
-        if not inicio in self.vertices:
-            raise Exception("El vertice de inicio no se encuentra en el grafo")
-        if not fin in self.vertices:
-            raise Exception("El vertice de fin no se encuentra en el grafo")
+        if not inicio in self.vertices or not fin in self.vertices:
+           return False
+
         if peso == None:
             peso = 1
         
@@ -47,11 +46,8 @@ class Grafo:
         return True
 
     def borrar_arista(self, inicio, fin):
-        if not inicio in self.vertices:
-            raise Exception("El vertice de inicio no se encuentra en el grafo")
-        if not fin in self.vertices:
-            raise Exception("El vertice de fin no se encuentra en el grafo")
-        
+        if not inicio in self.vertices or not fin in self.vertices:
+           return False
         self.vertices[inicio].pop(fin)
 
         if self.estado_es_dirigido == False:
@@ -59,18 +55,14 @@ class Grafo:
         return True
 
     def estan_unidos(self, inicio, fin):
-        if not inicio in self.vertices:
-            raise Exception("El vertice de inicio no se encuentra en el grafo")
-        if not fin in self.vertices:
-            raise Exception("El vertice de fin no se encuentra en el grafo")
+        if not inicio in self.vertices or not fin in self.vertices:
+           return False
         
         return fin in self.vertices[inicio]
 
     def peso_arista(self, inicio, fin):
-        if not inicio in self.vertices:
-            raise Exception("El vertice de inicio no se encuentra en el grafo")
-        if not fin in self.vertices:
-            raise Exception("El vertice de fin no se encuentra en el grafo")
+        if not inicio in self.vertices or not fin in self.vertices:
+           return False
 
         return self.vertices[inicio][fin]
     
@@ -79,8 +71,9 @@ class Grafo:
     
     def adyacentes(self, vertice):
         if not vertice in self.vertices:
-            raise Exception("El vertice no se encuentra en el grafo")
-        return self.vertices[vertice].keys
+            return False
+        ady = list(self.vertices[vertice])
+        return ady
 
 
     def vertice_aleatorio(self):
