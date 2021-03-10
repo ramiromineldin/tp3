@@ -86,6 +86,29 @@ def page_rank_personalizado(grafo, vertice, k, n):
     return diccionario_a_lista_ordenada(pageranks)
 
 
+def clustering(grafo, vertice): 
+	aristas_entre_adyacentes = 0
+	adyacentes = len(grafo.adyacentes(vertice))
+	clustering = 0
+	if (adyacentes < 2): 
+		return clustering
+
+	for w in grafo.adyacentes(vertice): 
+		for v in grafo.adyacentes(vertice): 
+			if grafo.estan_unidos(grafo, v, w):
+				aristas_entre_adyacentes += 1
+		break
+
+	clustering = (2 * aristas_entre_adyacentes) / (adyacentes * (adyacentes - 1))
+	return clustering
+
+def clustering_promedio(grafo): 
+	suma = 0
+	for v in grafo.obtener_vertices(): 
+		suma +=  clustering(v)
+
+	return suma/len(grafo)
+
 
 g = Grafo(False)
 g.agregar_vertice(1)
