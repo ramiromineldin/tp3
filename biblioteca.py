@@ -5,7 +5,7 @@ import random
 import csv
 
 
-def grafo_crear_estructura_1(ruta_archivo):
+def grafo_crear_estructura(ruta_archivo):
     canciones_usuarios = Grafo(False)
     canciones_por_playlist = {}
     usuarios = set()
@@ -24,15 +24,15 @@ def grafo_crear_estructura_1(ruta_archivo):
     return canciones_por_playlist, canciones_usuarios, usuarios
 
 def grafo_crear_estructura_2(canciones_por_playlist):
-    canciones = Grafo(False)
+    red_canciones = Grafo(False)
     for playlist in canciones_por_playlist:
         for i in canciones_por_playlist[playlist]:
-            canciones.agregar_vertice(i)
+            red_canciones.agregar_vertice(i)
             for j in canciones_por_playlist[playlist]:
                 if i != j:
-                    canciones.agregar_vertice(j)
-                    canciones.agregar_arista(i , j, playlist)
-    return canciones
+                    red_canciones.agregar_vertice(j)
+                    red_canciones.agregar_arista(i , j, playlist)
+    return red_canciones
 
 
 
@@ -190,4 +190,3 @@ def rango_n(grafo, origen, n):
         if orden[vertice] == n:
             cantidad_a_dist_n += 1
     return cantidad_a_dist_n
-
