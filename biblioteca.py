@@ -93,7 +93,7 @@ def bfs_camino_corto(grafo, origen, final):
 
 
 def diccionario_a_lista_ordenada(diccionario):
-    """Recibe un diccionario, ordena los datos del diccionario de menor a mayor, una lista con sus respectivas claves ordenadas de mayor a menor por el criterio anterior""
+    """Recibe un diccionario, ordena los datos del diccionario de menor a mayor, una lista con sus respectivas claves ordenadas de mayor a menor por el criterio anterior"""
     heap = []
     lista = []
     for item in list(diccionario.items()):
@@ -105,7 +105,7 @@ def diccionario_a_lista_ordenada(diccionario):
      
      
 def page_rank(grafo, d, k):
-    "" Itera k veces el grafo y calcula el page rank de cada vertice. Devuelve una lista con los vertices ordenados de mayor a menor dependiendo de su page rank."""
+    """ Itera k veces el grafo y calcula el page rank de cada vertice. Devuelve una lista con los vertices ordenados de mayor a menor dependiendo de su page rank."""
     
     len_grafo = len(grafo) 
     pageranks_actuales = {}
