@@ -105,7 +105,8 @@ class Grafo:
         return self.vertices.keys()
     
     def adyacentes(self, vertice):
-        """"Devuelve una lista con los vertices adyacentes del vertice pasado por parametro. En caso de que este no se encuentre en el grafo devuelve una excepcion""" 
+        """"Devuelve una lista con los vertices adyacentes del vertice pasado por parametro. En caso de que este no se encuentre en el grafo devuelve una excepcion"""
+        
         if not vertice in self.vertices:
             raise Exception("El vertice {} no se encuentra en el grafo".format(vertice))
         ady = list(self.vertices[vertice])
