@@ -5,7 +5,15 @@ import sys
 import random
 
 
+
 def camino(canciones_usuarios, origen, final, usuarios):
+    """
+    Calcula el camino minimo entre dos canciones del grafo y lo imprime. En caso de no encontrarlo devuelve error
+    canciones_usuarios: grafo creado
+    origen, final: vertices del grafo
+    usuarios: lista con todos los usuarios del dataset 
+    """
+
     if origen in usuarios or final in usuarios: 
         print("Tanto el origen como el destino deben ser canciones")
 
@@ -19,7 +27,15 @@ def camino(canciones_usuarios, origen, final, usuarios):
             print("No se encontro el recorrido")
     return
 
+
 def mas_importantes(canciones_usuarios, usuarios, n, pagerank_ya_calculado):
+    """
+    Calcula el pagerank del grafo e imprime las n canciones mas importantes. 
+    canciones_usuarios = grafo creado
+    usuarios: lista con todos los usuarios del dataset 
+    n: cantidad de vertices que se quieren imprimir 
+    pagerank_ya_calculado: diccionario donde se guarda el pagerank
+    """
     if len(pagerank_ya_calculado) == 0:
         pagerank_ya_calculado = biblioteca.page_rank(canciones_usuarios, 0.85, 20)
 
@@ -33,8 +49,18 @@ def mas_importantes(canciones_usuarios, usuarios, n, pagerank_ya_calculado):
             tam_lista += 1
     imprimir.imprimir_puntocoma(canciones_mas_importantes)
     return
-        
+
+
+
 def recomendacion(canciones_usuarios, elemento,tipo, usuarios, n,):
+    """
+    Calcula el pagerank personalizado del grafo e imprime los n vertices mas importantes (pueden ser canciones o usuarios). 
+    canciones_usuarios = grafo creado
+    elemento = vertice del grafo
+    tipo = categoria de los vertices que se piden (canciones o usuarios)
+    usuarios: lista con todos los usuarios del dataset 
+    n: cantidad de vertices que se quieren imprimir 
+    """
     pageranks = biblioteca.page_rank_personalizado(canciones_usuarios, elemento, 100, 15)
     print(len(pageranks))
     recomendacion = []
@@ -58,23 +84,46 @@ def recomendacion(canciones_usuarios, elemento,tipo, usuarios, n,):
     return
 
 def ciclo_n_canciones(red_canciones, n, cancion):
+    """ 
+    Calcula un ciclo de n canciones y lo imprime. En caso de no encontralo devuelve error 
+    red_canciones = grafo fue creado
+    n: cantidad de vertices a imprimir 
+    cancion: vertice del grafo 
+    """
+
     ciclo = biblioteca.obtener_ciclo(red_canciones, cancion, n)
-    imprimir.imprimir_flechas(ciclo)
+    if ciclo != None:
+        imprimir.imprimir_flechas(ciclo)
+    else: 
+        print("No se encontro recorrido")
     return
 
 
 def rango(red_canciones, n, cancion):
+    """
+    Calcula la cantidad de canciones que se encuenten a exactamente n saltos de la cancion indicada
+    red_canciones: grafo fue creao
+    n: cantidad de saltos entre canciones
+    cancion: vertice del grafo
+    """
+
     rango = biblioteca.rango_n(red_canciones, cancion, n)
-    imprimir.imprimir_numero(rango)    
+    imprimir.imprimir_dato(rango)    
 
 
 def clustering(red_canciones, cancion):
+    """
+    Calcula el coeficiente de clustering de la canción indicada. En caso de no indicar canción, se calcula el 
+    clustering promedio de la red
+    red_canciones: grafo fue creao
+    cancion: vertice del grafo
+    """
     if cancion:
         coef = biblioteca.calcular_clustering(red_canciones, cancion)
     else: 
         coef = biblioteca.clustering_promedio(red_canciones)
     coef = round(coef, 3)
-    imprimir.imprimir_numero(coef)
+    imprimir.imprimir_dato(coef)
 
 
 def procesar_comando(comando, parametros, canciones_usuarios, canciones_por_playlist, usuarios, red_canciones, pagerank_ya_calculado):
