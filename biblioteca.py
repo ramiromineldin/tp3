@@ -10,6 +10,11 @@ csv.field_size_limit(sys.maxsize)
 
 
 def grafo_crear_estructura(ruta_archivo):
+    """Recibe una ruta de archivo, lee el contenido y devuelve un grafo no dirigido donde las canciones y los usuarios son los vertices, 
+    las aristas conecta usuarios con vertices si el usuario tiene una playlist con esta cancion y el peso de la arista el nombre la playlist, 
+     un diccionario donde las claves son las playlist y los datos son una lista de canciones que pertencen a la playlist 
+     y por ultimo devuelve un set que tiene los nombres de todos los usuarios"""
+    
     canciones_usuarios = Grafo(False)
     canciones_por_playlist = {}
     usuarios = set()
@@ -33,6 +38,9 @@ def grafo_crear_estructura(ruta_archivo):
     return canciones_por_playlist, canciones_usuarios, usuarios
 
 def grafo_crear_estructura_2(canciones_por_playlist):
+    """Recibe un diccionario donde las claves son las playlist y los datos son una lista de canciones que pertencen a la playlist 
+    y devuelve un grafo no pesado donde los vertices son las canciones y las aristas relacionan a las canciones que pertenecen a una misma playlist."""
+    
     red_canciones = Grafo(False)
     for playlist in canciones_por_playlist:
         for i in canciones_por_playlist[playlist]:
@@ -40,13 +48,15 @@ def grafo_crear_estructura_2(canciones_por_playlist):
             for j in canciones_por_playlist[playlist]:
                 if i != j:
                     red_canciones.agregar_vertice(j)
-                    red_canciones.agregar_arista(i , j, playlist)
+                    red_canciones.agregar_arista(i , j, None)
 
     return red_canciones
 
 
 
 def camino_mas_corto(grafo, origen, final):
+    """Recibe un grafo, un vertice de origen y un vertice final, halla el camino mas corto entre el origen y el final y devuelve una lista con el camino. 
+    En caso de no haber un camino devuelve None"""
     padres = bfs_camino_corto(grafo, origen, final)
     recorrido = []
     if padres != None:
@@ -83,6 +93,7 @@ def bfs_camino_corto(grafo, origen, final):
 
 
 def diccionario_a_lista_ordenada(diccionario):
+    """Recibe un diccionario, ordena los datos del diccionario de menor a mayor, una lista con sus respectivas claves ordenadas de mayor a menor por el criterio anterior""
     heap = []
     lista = []
     for item in list(diccionario.items()):
@@ -94,6 +105,8 @@ def diccionario_a_lista_ordenada(diccionario):
      
      
 def page_rank(grafo, d, k):
+    "" Itera k veces el grafo y calcula el page rank de cada vertice. Devuelve una lista con los vertices ordenados de mayor a menor dependiendo de su page rank."""
+    
     len_grafo = len(grafo) 
     pageranks_actuales = {}
     pageranks_anteriores = {}
