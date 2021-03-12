@@ -36,7 +36,8 @@ class Grafo:
         return True
     
     def borrar_vertice(self, clave):
-        """Borra un vertice del grafo y todas las aristas que lo conectan y devuelve True. En caso de que el vertice no se encuentre devuelve False"""
+        """Borra un vertice del grafo y todas las aristas que lo conectan y devuelve True. En caso de que el vertice no se encuentre
+         devuelve False"""
         
         if not clave in self.vertices: 
             return False
@@ -48,7 +49,8 @@ class Grafo:
         return True
 
     def agregar_arista(self, inicio, fin, peso):
-        """Agrega una arista al grafo que conecta los vertices pasados por parametro. En caso de agregarla correctamente devuelve True. 
+        """Agrega una arista al grafo que conecta los vertices pasados por parametro. En caso de que el grafo sea no pesado pasar como
+        parametro None. En caso de agregarla correctamente devuelve True. 
         Si la clave de inicio o fin no se encuentra en el grafo o si el peso de la arista es 0 devuelve Falso"""
         
         if not inicio in self.vertices or not fin in self.vertices or self.estan_unidos(inicio, fin) or peso == 0 or inicio == fin:
@@ -83,7 +85,8 @@ class Grafo:
         return True
 
     def estan_unidos(self, inicio, fin):
-        """Devuelve True si los vertices pasados por parametro estan unidos por una arista. En caso de que alguno de los vertices no pertenezca al grafo devuelve False"""
+        """Devuelve True si los vertices pasados por parametro estan unidos por una arista. En caso de que alguno de los vertices 
+        o pertenezca al grafo devuelve False"""
         
         if not inicio in self.vertices or not fin in self.vertices:
            return False
@@ -94,7 +97,7 @@ class Grafo:
         """Devuelve el peso de la arista que une a los vertices pasados por parametro y devuelve True. 
         En caso que alguno de los vertices no se encuentre en el grafo o estos no esten unidos devuelve False"""
         
-        if not inicio in self.vertices or not fin in self.vertices or not estan_unidos(inicio, fin):
+        if not inicio in self.vertices or not fin in self.vertices or not self.estan_unidos(inicio, fin):
            return False
 
         return self.vertices[inicio][fin]
@@ -105,10 +108,11 @@ class Grafo:
         return self.vertices.keys()
     
     def adyacentes(self, vertice):
-        """"Devuelve una lista con los vertices adyacentes del vertice pasado por parametro. En caso de que este no se encuentre en el grafo devuelve una excepcion"""
+        """"Devuelve una lista con los vertices adyacentes del vertice pasado por parametro. En caso de que este no se encuentre en 
+        el grafo devuelve una excepcion"""
         
         if not vertice in self.vertices:
-            raise Exception("El vertice {} no se encuentra en el grafo".format(vertice))
+            return None
         ady = list(self.vertices[vertice])
         return ady
 
@@ -118,4 +122,3 @@ class Grafo:
         if self.cantidad_vertices == 0:
             return None
         return random.choice(list(self.vertices.keys()))
-
