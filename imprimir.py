@@ -35,4 +35,3 @@ def imprimir_dato(dato):
     """Recibe un dato y lo imprime"""
     
     print(dato)
-    
