@@ -5,6 +5,7 @@ class Grafo:
     def __init__(self, es_dirigido):
         self.vertices = {}
         self.estado_es_dirigido = es_dirigido
+        self.cantidad_aristas = 0
     
     def __len__(self):
         return len(self.vertices)
@@ -33,9 +34,9 @@ class Grafo:
         return True
 
     def agregar_arista(self, inicio, fin, peso):
-        if not inicio in self.vertices or not fin in self.vertices:
+        if not inicio in self.vertices or not fin in self.vertices or self.estan_unidos(inicio, fin) or peso == 0 or inicio == fin:
            return False
-
+     
         if peso == None:
             peso = 1
         
@@ -43,7 +44,12 @@ class Grafo:
 
         if self.estado_es_dirigido == False:
             self.vertices[fin][inicio] = peso
+
+        self.cantidad_aristas += 1
         return True
+
+    def total_aristas(self): 
+        return self.cantidad_aristas
 
     def borrar_arista(self, inicio, fin):
         if not inicio in self.vertices or not fin in self.vertices:
@@ -71,7 +77,7 @@ class Grafo:
     
     def adyacentes(self, vertice):
         if not vertice in self.vertices:
-            return False
+            raise Exception("El vertice {} no se encuentra en el grafo".format(vertice))
         ady = list(self.vertices[vertice])
         return ady
 
