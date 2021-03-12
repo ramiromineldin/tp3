@@ -24,11 +24,11 @@ def camino(canciones_usuarios, origen, final, usuarios):
             imprimir.imprimir_camino(recorrido)
 
         else:
-            print("No se encontro el recorrido")
+            print("No se encontro recorrido")
     return
 
 
-def mas_importantes(canciones_usuarios, usuarios, n, pagerank_ya_calculado):
+def mas_importantes(canciones_usuarios, usuarios, n, pageranks):
     """
     Calcula el pagerank del grafo e imprime las n canciones mas importantes. 
     canciones_usuarios = grafo creado
@@ -36,23 +36,21 @@ def mas_importantes(canciones_usuarios, usuarios, n, pagerank_ya_calculado):
     n: cantidad de vertices que se quieren imprimir 
     pagerank_ya_calculado: diccionario donde se guarda el pagerank
     """
-    if len(pagerank_ya_calculado) == 0:
-        pagerank_ya_calculado = biblioteca.page_rank(canciones_usuarios, 0.85, 20)
 
     canciones_mas_importantes = []
     tam_lista = 0
-    for elemento in pagerank_ya_calculado:
+    for elemento in pageranks:
         if tam_lista == n:
             break
         if not elemento in usuarios:
             canciones_mas_importantes.append(elemento)
             tam_lista += 1
     imprimir.imprimir_puntocoma(canciones_mas_importantes)
-    return
+    return 
 
 
 
-def recomendacion(canciones_usuarios, elemento,tipo, usuarios, n,):
+def recomendacion(canciones_usuarios, canciones ,tipo, usuarios, n):
     """
     Calcula el pagerank personalizado del grafo e imprime los n vertices mas importantes (pueden ser canciones o usuarios). 
     canciones_usuarios = grafo creado
@@ -61,19 +59,20 @@ def recomendacion(canciones_usuarios, elemento,tipo, usuarios, n,):
     usuarios: lista con todos los usuarios del dataset 
     n: cantidad de vertices que se quieren imprimir 
     """
-    pageranks = biblioteca.page_rank_personalizado(canciones_usuarios, elemento, 100, 15)
-    print(len(pageranks))
+
+    pagerank_ya_calculado = biblioteca.page_rank_personalizado(canciones_usuarios, canciones, 500, 15)
+
     recomendacion = []
     es_usuario = False
-
+    
     if tipo == "usuarios":
         es_usuario = True
     
-    for i in pageranks:
+    for i in pagerank_ya_calculado:
         if len(recomendacion) == n:
             break
 
-        if i == elemento: continue
+        if i in canciones: continue
 
         elif (es_usuario and i in usuarios) or (not es_usuario and i not in usuarios):
             recomendacion.append(i)
@@ -139,8 +138,7 @@ def procesar_comando(comando, parametros, canciones_usuarios, canciones_por_play
         tipo = parametros_separados[0]
         n = parametros_separados[1]
         canciones = parametros_separados[2].split(" >>>> ")
-        cancion = random.choice(canciones)
-        recomendacion(canciones_usuarios, cancion, tipo, usuarios, int(n))
+        recomendacion(canciones_usuarios, canciones, tipo, usuarios, int(n))
     
     elif comando == "ciclo" or comando == "rango":
         es_ciclo = False
@@ -164,8 +162,10 @@ def procesar_comando(comando, parametros, canciones_usuarios, canciones_por_play
 
 def procesar_entrada(canciones_usuarios, canciones_por_playlist, usuarios):
     esta_creado = False
-    pagerank_ya_calculado = []
+    pagerank_ya_calculado = False
     red_canciones = None
+    pageranks = []
+
     for row in sys.stdin:
         row = row.rstrip("\n")
         entrada = row.split(" ", 1)
@@ -178,8 +178,11 @@ def procesar_entrada(canciones_usuarios, canciones_por_playlist, usuarios):
         if comando in ["ciclo", "rango", "clustering"] and not esta_creado:
             red_canciones = biblioteca.grafo_crear_estructura_2(canciones_por_playlist)
             esta_creado = True
-        
-        procesar_comando(comando, parametros, canciones_usuarios, canciones_por_playlist, usuarios, red_canciones, pagerank_ya_calculado)
+
+        if comando == "mas_importantes" and not pagerank_ya_calculado: 
+            pageranks = biblioteca.page_rank(canciones_usuarios, 0.85, 20)
+            pagerank_ya_calculado = True
+        procesar_comando(comando, parametros, canciones_usuarios, canciones_por_playlist, usuarios, red_canciones, pageranks)
 
 
         
