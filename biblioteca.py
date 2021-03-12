@@ -12,8 +12,8 @@ csv.field_size_limit(sys.maxsize)
 def grafo_crear_estructura(ruta_archivo):
     """Recibe una ruta de archivo, lee el contenido y devuelve un grafo no dirigido donde las canciones y los usuarios son los vertices, 
     las aristas conecta usuarios con vertices si el usuario tiene una playlist con esta cancion y el peso de la arista el nombre la playlist, 
-     un diccionario donde las claves son las playlist y los datos son una lista de canciones que pertencen a la playlist 
-     y por ultimo devuelve un set que tiene los nombres de todos los usuarios"""
+    un diccionario donde las claves son las playlist y los datos son una lista de canciones que pertencen a la playlist 
+    y por ultimo devuelve un set que tiene los nombres de todos los usuarios"""
     
     canciones_usuarios = Grafo(False)
     canciones_por_playlist = {}
@@ -39,7 +39,8 @@ def grafo_crear_estructura(ruta_archivo):
 
 def grafo_crear_estructura_2(canciones_por_playlist):
     """Recibe un diccionario donde las claves son las playlist y los datos son una lista de canciones que pertencen a la playlist 
-    y devuelve un grafo no pesado donde los vertices son las canciones y las aristas relacionan a las canciones que pertenecen a una misma playlist."""
+    y devuelve un grafo no pesado donde los vertices son las canciones y las aristas relacionan a las canciones que pertenecen a una 
+    misma playlist."""
     
     red_canciones = Grafo(False)
     for playlist in canciones_por_playlist:
@@ -55,8 +56,9 @@ def grafo_crear_estructura_2(canciones_por_playlist):
 
 
 def camino_mas_corto(grafo, origen, final):
-    """Recibe un grafo, un vertice de origen y un vertice final, halla el camino mas corto entre el origen y el final y devuelve una lista con el camino. 
-    En caso de no haber un camino devuelve None"""
+    """Recibe un grafo, un vertice de origen y un vertice final, halla el camino mas corto entre el origen y el final y 
+    devuelve una lista con el camino. En caso de no haber un camino devuelve None"""
+
     padres = bfs_camino_corto(grafo, origen, final)
     recorrido = []
     if padres != None:
@@ -93,7 +95,8 @@ def bfs_camino_corto(grafo, origen, final):
 
 
 def diccionario_a_lista_ordenada(diccionario):
-    """Recibe un diccionario, ordena los datos del diccionario de menor a mayor, una lista con sus respectivas claves ordenadas de mayor a menor por el criterio anterior"""
+    """Recibe un diccionario, ordena los datos del diccionario de menor a mayor, una lista con sus respectivas claves ordenadas de 
+    mayor a menor por el criterio anterior"""
     heap = []
     lista = []
     for item in list(diccionario.items()):
@@ -105,7 +108,8 @@ def diccionario_a_lista_ordenada(diccionario):
      
      
 def page_rank(grafo, d, k):
-    """ Itera k veces el grafo y calcula el page rank de cada vertice. Devuelve una lista con los vertices ordenados de mayor a menor dependiendo de su page rank."""
+    """ Itera k veces el grafo y calcula el page rank de cada vertice. Devuelve una lista con los vertices ordenados de mayor a 
+    menor dependiendo de su page rank."""
     
     len_grafo = len(grafo) 
     pageranks_actuales = {}
@@ -124,47 +128,121 @@ def page_rank(grafo, d, k):
 
     return diccionario_a_lista_ordenada(pageranks_actuales)
 
-def wrp_obtener_ciclo(grafo, inicio, actual, visitados, n, i, padres): 
-    if (i == n and inicio == actual): return padres
-    if i > n: return None
 
-    for w in grafo.adyacentes(actual):
-        if (w not in visitados or padres[actual] != w):
-            padres[w] = actual
-            visitados.add(w)
-            ciclo = wrp_obtener_ciclo(grafo, inicio, w, visitados, n, i + 1, padres)
-            visitados.remove(w)  
-            if ciclo: return ciclo
-    return None
-
-
+def wrp_page_rank_personalizado(grafo, vertice, k, pageranks,j):
+    if j == k:
+        return
+    else:
+        adyacentes = grafo.adyacentes(vertice)
+        ady = random.choice(adyacentes)
+        transferencia = pageranks[vertice] / len(adyacentes)
+        pageranks[vertice] -= transferencia
+        pageranks[ady] = pageranks.get(ady, 0) + transferencia        
+        j+=1
+        wrp_page_rank_personalizado(grafo, ady, k, pageranks,j)
 
 
-def obtener_ciclo(grafo, inicio, n):
+def page_rank_personalizado(grafo, vertice, k, n):
     """
-    Calcula un ciclo de largo n desde desde y hasta un vertice n. Devuelve la lista con los vertices de dicho ciclo, en caso
-    de no encontrarse devuelve None. 
+    Calcula el PageRank Personalizado de los vertices del grafo empezando desde el vertice pasado por parametro y devuelve una lista 
+    de los vertices ordenada de mayor a menor segun PageRank. 
     grafo: grafo fue creado
-    inicio: vertice del grafo
-    n: longitud del ciclo
+    vertice: vertice del grafo
+    k: longitud de camino de RandomWalks 
+    n: cantidad de iteraciones para el PageRank 
     """
 
+    pageranks = {}
+    pageranks[vertice] = 1
+    for i in range(n):
+        wrp_page_rank_personalizado(grafo, vertice, k, pageranks, 0)
+    return diccionario_a_lista_ordenada(pageranks)
+
+
+# def camino_hamiltoniano(grafo, inicio, v, visitados, camino, n, padres): 
+#     camino.append(v)
+#     visitados.add(v)
+#     print(visitados)
+
+#     if len(camino) == n and inicio not in camino and grafo.estan_unidos(camino[-1], inicio):
+#         print(len(camino))
+#         camino.append(inicio)
+#         return True
+
+#     for w in grafo.adyacentes(v): 
+#         if w not in visitados or w == inicio and padres[v] != w: 
+#             padres[w] = v
+
+#             if camino_hamiltoniano(grafo, inicio, w, visitados, camino, n, padres):  
+#                 return True
+#     visitados.remove(v)
+#     camino.pop()
+#     return False
+def camino_hamiltoniano(grafo, inicio, v, visitados, camino, n): 
+    camino.append(v)
+    visitados.add(v)
+    print(v, inicio)
+    if len(camino) == n and inicio in grafo.adyacentes(v) and len(camino) > 2:
+        camino.append(inicio)
+        return True
+    for w in grafo.adyacentes(v): 
+        if(len(camino) >= n): break
+        if w not in visitados: 
+            if camino_hamiltoniano(grafo, inicio, w, visitados, camino, n):  
+                return True
+
+    if len(visitados) != 0 and v in visitados:
+        visitados.remove(v)
+    camino.pop()
+    return False
+
+
+def aaa_obtener_ciclo(grafo, inicio, n): 
+    camino = []
     visitados = set()
-    visitados.add(inicio)
-    padres = {}
-    padres[inicio] = None
-    padres = wrp_obtener_ciclo(grafo, inicio, inicio, visitados, n,0, padres)
-    if padres: 
-        v = padres[inicio]
-        recorrido = [inicio]
-        while True:
-            if v == inicio:
-                break
-            recorrido.append(v)
-            v = padres[v]
-        recorrido.append(inicio)
-        return recorrido[::-1]
+    if camino_hamiltoniano(grafo, inicio, inicio, visitados, camino, n):
+            return camino
     return None
+
+
+# def wrp_obtener_ciclo(grafo, inicio, actual, visitados, n, i, padres): 
+#      if (i == n and inicio == actual): return padres
+#     if i > n: return None
+
+#     for w in grafo.adyacentes(actual):
+#         if w not in visitados or w == inicio and padres[actual] != w: 
+#             padres[w] = actual
+#             visitados.add(w)
+#             ciclo = wrp_obtener_ciclo(grafo, inicio, w, visitados, n, i + 1, padres)
+#             visitados.remove(w)  
+#             if ciclo: return ciclo
+#     return None
+   
+
+
+# def obtener_ciclo(grafo, inicio, n):
+#     """
+#     Calcula un ciclo de largo n desde desde y hasta un vertice n. Devuelve la lista con los vertices de dicho ciclo, en caso
+#     de no encontrarse devuelve None. 
+#     grafo: grafo fue creado
+#     inicio: vertice del grafo
+#     n: longitud del ciclo
+#     """
+
+#     visitados = set()
+#     visitados.add(inicio)
+#     padres = wrp_obtener_ciclo(grafo, inicio, inicio, visitados, n,0, padres)
+#     if padres: 
+#         v = padres[inicio]
+#         recorrido = [inicio]
+#         while True:
+#             if v == inicio:
+#                 break
+#             recorrido.append(v)
+#             v = padres[v]
+#         recorrido.append(inicio)
+#         return recorrido[::-1]
+#     return None
 
 
 def calcular_clustering(grafo, vertice): 
