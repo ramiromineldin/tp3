@@ -3,6 +3,10 @@ import heapq
 from grafo import Grafo
 import random
 import csv
+import sys
+sys.setrecursionlimit(50000)
+csv.field_size_limit(sys.maxsize)
+
 
 
 def grafo_crear_estructura(ruta_archivo):
@@ -11,13 +15,18 @@ def grafo_crear_estructura(ruta_archivo):
     usuarios = set()
     with open(ruta_archivo) as archivo:
         reader = csv.reader(archivo, delimiter = "\t")
+        next(reader)
         for row in reader:
-            id, user_id, track_name, artist, playlist_id, playlist_name, genres = row
+            if len(row) != 7: continue
+            id_n, user_id, track_name, artist, playlist_id, playlist_name, genres = row
+            cancion = "{} - {}".format(track_name,artist)
             canciones_usuarios.agregar_vertice(user_id)
-            canciones_usuarios.agregar_vertice("{}-{}".format(track_name,artist))
-            canciones_usuarios.agregar_arista(user_id,"{}-{}".format(track_name,artist), playlist_name)
+            canciones_usuarios.agregar_vertice(cancion)
+            canciones_usuarios.agregar_arista(user_id,cancion, playlist_name)
 
-            canciones_por_playlist[playlist_name] = canciones_por_playlist.get(playlist_name, []).append("{}-{}".format(track_name,artist))
+            canciones_por_playlist[playlist_name] = canciones_por_playlist.get(playlist_name, [])
+            if cancion not in canciones_por_playlist[playlist_name]:
+                canciones_por_playlist[playlist_name].append(cancion)
             
             usuarios.add(user_id)
 
@@ -32,6 +41,7 @@ def grafo_crear_estructura_2(canciones_por_playlist):
                 if i != j:
                     red_canciones.agregar_vertice(j)
                     red_canciones.agregar_arista(i , j, playlist)
+
     return red_canciones
 
 
@@ -65,8 +75,8 @@ def bfs_camino_corto(grafo, origen, final):
                 visitados.add(w)
                 cola.append(w)
                 padres[w] = v
-                if w == final:
-                    return padres
+                if w == final: return padres
+
     return None
 
 
@@ -103,8 +113,8 @@ def page_rank(grafo, d, k):
 
 
 
-def random_walk(grafo, vertice, k, pageranks,i):
-    if i == k:
+def random_walk(grafo, vertice, k, pageranks,j):
+    if j == k:
         return
     else:
         adyacentes = grafo.adyacentes(vertice)
@@ -112,8 +122,8 @@ def random_walk(grafo, vertice, k, pageranks,i):
         transferencia = pageranks[vertice] / len(adyacentes)
         pageranks[vertice] -= transferencia
         pageranks[ady] = pageranks.get(ady, 0) + transferencia        
-        i+=1
-        random_walk(grafo, ady, k, pageranks,i)
+        j+=1
+        random_walk(grafo, ady, k, pageranks,j)
 
 
 def page_rank_personalizado(grafo, vertice, k, n):
@@ -130,21 +140,32 @@ def wrp_obtener_ciclo(grafo, inicio, actual, visitados, n, i, padres):
     if i > n: return None
 
     for w in grafo.adyacentes(actual):
-        if (w in visitados and w != inicio) or padres[actual] == w: continue
-        padres[w] = actual
-        visitados.add(w)
-        ciclo = wrp_obtener_ciclo(grafo, inicio, w, visitados, n, i + 1, padres)
-        visitados.remove(w)
-        if ciclo: return padres
-        
+        if (w not in visitados or padres[actual] != w):
+            padres[w] = actual
+            visitados.add(w)
+            ciclo = wrp_obtener_ciclo(grafo, inicio, w, visitados, n, i + 1, padres)
+            visitados.remove(w)  
+            if ciclo: return ciclo
     return None
+
 
 def obtener_ciclo(grafo, inicio, n):
     visitados = set()
     visitados.add(inicio)
     padres = {}
     padres[inicio] = None
-    return  wrp_obtener_ciclo(grafo, inicio, inicio, visitados, n,0, padres)
+    padres = wrp_obtener_ciclo(grafo, inicio, inicio, visitados, n,0, padres)
+    if padres: 
+        v = padres[inicio]
+        recorrido = [inicio]
+        while True:
+            if v == inicio:
+                break
+            recorrido.append(v)
+            v = padres[v]
+        recorrido.append(inicio)
+        return recorrido[::-1]
+    return None
 
 
 def calcular_clustering(grafo, vertice): 
@@ -165,7 +186,7 @@ def calcular_clustering(grafo, vertice):
 def clustering_promedio(grafo): 
     suma = 0
     for v in grafo.obtener_vertices(): 
-        suma +=  clustering(grafo, v)
+        suma +=  calcular_clustering(grafo, v)
 
     return suma/len(grafo)
 
@@ -190,3 +211,5 @@ def rango_n(grafo, origen, n):
         if orden[vertice] == n:
             cantidad_a_dist_n += 1
     return cantidad_a_dist_n
+
+
