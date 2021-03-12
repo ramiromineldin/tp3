@@ -124,30 +124,6 @@ def page_rank(grafo, d, k):
 
     return diccionario_a_lista_ordenada(pageranks_actuales)
 
-
-
-def random_walk(grafo, vertice, k, pageranks,j):
-    if j == k:
-        return
-    else:
-        adyacentes = grafo.adyacentes(vertice)
-        ady = random.choice(adyacentes)
-        transferencia = pageranks[vertice] / len(adyacentes)
-        pageranks[vertice] -= transferencia
-        pageranks[ady] = pageranks.get(ady, 0) + transferencia        
-        j+=1
-        random_walk(grafo, ady, k, pageranks,j)
-
-
-def page_rank_personalizado(grafo, vertice, k, n):
-    pageranks = {}
-    pageranks[vertice] = 1
-    for i in range(n):
-        random_walk(grafo, vertice, k, pageranks, 0)
-    return diccionario_a_lista_ordenada(pageranks)
-
-
-
 def wrp_obtener_ciclo(grafo, inicio, actual, visitados, n, i, padres): 
     if (i == n and inicio == actual): return padres
     if i > n: return None
@@ -162,7 +138,17 @@ def wrp_obtener_ciclo(grafo, inicio, actual, visitados, n, i, padres):
     return None
 
 
+
+
 def obtener_ciclo(grafo, inicio, n):
+    """
+    Calcula un ciclo de largo n desde desde y hasta un vertice n. Devuelve la lista con los vertices de dicho ciclo, en caso
+    de no encontrarse devuelve None. 
+    grafo: grafo fue creado
+    inicio: vertice del grafo
+    n: longitud del ciclo
+    """
+
     visitados = set()
     visitados.add(inicio)
     padres = {}
@@ -182,6 +168,12 @@ def obtener_ciclo(grafo, inicio, n):
 
 
 def calcular_clustering(grafo, vertice): 
+    """
+    Calcula el clustering de un vertice del grafo y devuelve su valor  
+    grafo: grafo fue creado 
+    vertice: vertice del grafo
+    """
+    
     aristas_entre_adyacentes = 0
     adyacentes = len(grafo.adyacentes(vertice))
     clustering = 0
@@ -197,14 +189,25 @@ def calcular_clustering(grafo, vertice):
     return clustering
 
 def clustering_promedio(grafo): 
+    """
+    Calcula el clustering promedio del grafo entero y devuelve su valor
+    grafo: grafo fue creado 
+    """
+
     suma = 0
     for v in grafo.obtener_vertices(): 
         suma +=  calcular_clustering(grafo, v)
 
     return suma/len(grafo)
 
-
 def rango_n(grafo, origen, n):
+    """ 
+    Calcula la cantidad de vertices que se encuentran a una distancia n del vertice pasado por parametro, y devuelve la cantidad
+    grafo: grafo fue creado
+    origen: vertice del grafo
+    n: distancia entre vertices 
+    """
+
     visitados = set()
     orden = {}
     orden[origen] = 0
