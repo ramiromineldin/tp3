@@ -25,3 +25,6 @@ def imprimir_flechas(lista):
 def imprimir_puntocoma(lista):
     print("; ".join(lista))
 
+def imprimir_numero(numero): 
+    print(numero)
+    
